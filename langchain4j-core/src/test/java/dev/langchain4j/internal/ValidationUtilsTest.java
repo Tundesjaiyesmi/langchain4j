@@ -213,6 +213,21 @@ class ValidationUtilsTest implements WithAssertions {
     }
 
     @ParameterizedTest
+    @ValueSource(doubles = {0.1, Double.MAX_VALUE, Double.POSITIVE_INFINITY})
+    void should_not_throw_when_greater_than_0(Double d) {
+        ensureGreaterThanZero(d, "test");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(doubles = {Double.NEGATIVE_INFINITY, -0.1, 0.0, Double.NaN})
+    void should_throw_when_not_greater_than_0(Double d) {
+        assertThatThrownBy(() -> ensureGreaterThanZero(d, "test"))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("test must be greater than zero, but is: " + d);
+    }
+
+    @ParameterizedTest
     @ValueSource(doubles = {0.0, 0.5, 1.0})
     void should_not_throw_when_between(Double d) {
         ensureBetween(d, 0.0, 1.0, "test");
@@ -222,6 +237,14 @@ class ValidationUtilsTest implements WithAssertions {
     @NullSource
     @ValueSource(doubles = {-0.1, 1.1})
     void should_throw_when_not_between(Double d) {
+        assertThatThrownBy(() -> ensureBetween(d, 0.0, 1.0, "test"))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("test must be between 0.0 and 1.0, but is: " + d);
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY})
+    void should_throw_when_between_is_not_a_finite_number_in_range(Double d) {
         assertThatThrownBy(() -> ensureBetween(d, 0.0, 1.0, "test"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("test must be between 0.0 and 1.0, but is: " + d);

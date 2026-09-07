@@ -256,7 +256,7 @@ public class ValidationUtils {
      * @throws IllegalArgumentException if the expression is false.
      */
     public static double ensureGreaterThanZero(Double i, String name) {
-        if (i == null || i <= 0) {
+        if (i == null || i.isNaN() || i <= 0) {
             throw illegalArgument("%s must be greater than zero, but is: %s", name, i);
         }
 
@@ -273,7 +273,7 @@ public class ValidationUtils {
      * @throws IllegalArgumentException if the value is not in {@code [min, max]}.
      */
     public static double ensureBetween(Double d, double min, double max, String name) {
-        if (d == null || d < min || d > max) {
+        if (d == null || d.isNaN() || d < min || d > max) {
             throw illegalArgument("%s must be between %s and %s, but is: %s", name, min, max, d);
         }
         return d;
